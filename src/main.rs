@@ -13,10 +13,6 @@ impl EventHandler for Handler {
 
     async fn message(&self, context: Context, msg: Message) {
         if msg.content == "~ping" {
-            // if let Err(why) = msg.channel_id.say(&context.http, "~pong").await {
-            //     println!("Error sending message {why:?}");
-            // }
-
             match msg.channel_id.say(&context.http, "~pong").await {
                 Ok(msg) => {
                     println!("Responded with {:?}", msg.content);
