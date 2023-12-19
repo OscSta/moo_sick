@@ -2,6 +2,7 @@ mod commands;
 
 use serenity::{async_trait, model::channel::Message, model::gateway::Ready, prelude::*};
 use std::env;
+use dotenv;
 
 struct Handler;
 
