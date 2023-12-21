@@ -3,7 +3,7 @@ use serenity::model::prelude::Message;
 use serenity::{async_trait, framework::standard::CommandResult, prelude::Context};
 use songbird::{Event, EventContext, EventHandler, TrackEvent};
 
-struct TrackErrorNotifier;
+pub struct TrackErrorNotifier;
 #[async_trait]
 impl EventHandler for TrackErrorNotifier {
     async fn act(&self, context: &EventContext<'_>) -> Option<Event> {

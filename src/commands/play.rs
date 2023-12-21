@@ -54,7 +54,7 @@ async fn play(context: &Context, msg: &Message, mut args: Args) -> CommandResult
         } else {
             src = YoutubeDl::new(http_client, url);
         };
-        let _ = handler.play_input(src.clone().into());
+        let th = handler.play_input(src.clone().into());
         let _ = msg.channel_id.say(&context.http, "Playing playable").await;
     } else {
         let _ = msg
