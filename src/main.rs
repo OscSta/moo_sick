@@ -1,5 +1,6 @@
 mod commands;
 use crate::commands::join::*;
+use crate::commands::play::*;
 
 use dotenv;
 use reqwest::Client as HttpClient;
@@ -18,13 +19,8 @@ use std::env;
 struct Handler;
 
 #[group]
-#[commands(join,)]
+#[commands(join, play)]
 struct General;
-
-struct HttpKey;
-impl TypeMapKey for HttpKey {
-    type Value = HttpClient;
-}
 
 #[async_trait]
 impl EventHandler for Handler {
