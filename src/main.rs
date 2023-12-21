@@ -1,4 +1,5 @@
 mod commands;
+use crate::commands::join::*;
 
 use dotenv;
 use reqwest::Client as HttpClient;
@@ -17,7 +18,7 @@ use std::env;
 struct Handler;
 
 #[group]
-// #[commands()]
+#[commands(join,)]
 struct General;
 
 struct HttpKey;

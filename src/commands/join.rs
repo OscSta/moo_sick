@@ -1,6 +1,6 @@
 use serenity::all::standard::macros::command;
 use serenity::model::prelude::Message;
-use serenity::{async_trait, framework::standard::CommandResult, model::channel, prelude::Context};
+use serenity::{async_trait, framework::standard::CommandResult, prelude::Context};
 use songbird::{Event, EventContext, EventHandler, TrackEvent};
 
 struct TrackErrorNotifier;
@@ -36,7 +36,7 @@ async fn join(context: &Context, msg: &Message) -> CommandResult {
     let connect_to = match channel_id {
         Some(channel) => channel,
         None => {
-            msg.reply(context, "User not in voice channel").await;
+            let _ = msg.reply(context, "User not in voice channel").await;
             return Ok(());
         }
     };
