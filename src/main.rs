@@ -4,7 +4,10 @@ use dotenv;
 use reqwest::Client as HttpClient;
 use serenity::{
     async_trait,
-    framework::{standard::{Configuration, macros::group}, StandardFramework},
+    framework::{
+        standard::{macros::group, Configuration},
+        StandardFramework,
+    },
     model::gateway::Ready,
     prelude::*,
 };
