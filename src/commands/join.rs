@@ -36,7 +36,7 @@ async fn join(context: &Context, msg: &Message) -> CommandResult {
     let connect_to = match channel_id {
         Some(channel) => channel,
         None => {
-            let _ = msg.reply(context, "User not in voice channel").await;
+            let _ = msg.reply(context, "Join a voice channel before calling ?join").await;
             return Ok(());
         }
     };
@@ -49,6 +49,9 @@ async fn join(context: &Context, msg: &Message) -> CommandResult {
     if let Ok(handler_lock) = manager.join(guild_id, connect_to).await {
         let mut handler = handler_lock.lock().await;
         handler.add_global_event(TrackEvent::Error.into(), TrackErrorNotifier);
+        if let Ok(channel_name) = connect_to.name(&context.http).await {
+            println!("Joined voice channel {:?}", channel_name);
+        }
     }
 
     Ok(())

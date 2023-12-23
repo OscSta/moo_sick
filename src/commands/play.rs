@@ -2,7 +2,7 @@ use serenity::all::standard::macros::command;
 use serenity::framework::standard::Args;
 use serenity::model::prelude::Message;
 use serenity::{framework::standard::CommandResult, prelude::Context};
-use songbird::input::YoutubeDl;
+use songbird::input::{YoutubeDl, Input};
 use songbird::typemap::TypeMapKey;
 
 use reqwest::Client as HttpClient;
@@ -57,9 +57,13 @@ async fn play(context: &Context, msg: &Message, mut args: Args) -> CommandResult
         let _th = handler
             .play_input(
                 src.clone()
-                .into())
+                .into()) // Here .into() turns the YoutubeDl struct into an Input struct since
+                         // .play_input expects an Input struct. I assume?
             .set_volume(0.4);
-        let _ = msg.channel_id.say(&context.http, "Playing playable").await;
+        if let Ok(audio_meta) = Input::from(src).aux_metadata().await {
+            let _ = msg.channel_id.say(&context.http, format!("Playing {}", audio_meta.title.unwrap_or("audio".to_string()))).await;
+        }
+        println!("Playing audio");
     } else {
         let _ = msg
             .channel_id
