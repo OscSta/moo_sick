@@ -55,10 +55,10 @@ async fn play(context: &Context, msg: &Message, mut args: Args) -> CommandResult
             src = YoutubeDl::new(http_client, url);
         };
         let _th = handler
-            .play_input(
+            .enqueue_input(
                 src.clone()
-                .into()) // Here .into() turns the YoutubeDl struct into an Input struct since
-                         // .play_input expects an Input struct. I assume?
+                .into()) // Here .into() turns the YoutubeDl struct into an Input struct since .play_input expects an Input struct. I assume?
+                .await
             .set_volume(0.4);
         if let Ok(audio_meta) = Input::from(src).aux_metadata().await {
             let _ = msg.channel_id.say(&context.http, format!("Playing {}", audio_meta.title.unwrap_or("audio".to_string()))).await;
