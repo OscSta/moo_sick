@@ -21,7 +21,7 @@ struct Handler;
 
 #[group]
 #[commands(join, queue, pop)]
-struct General;
+struct All;
 
 #[async_trait]
 impl SerenityEventHandler for Handler {
@@ -41,7 +41,7 @@ async fn main() {
         | GatewayIntents::MESSAGE_CONTENT
         | GatewayIntents::non_privileged();
 
-    let framework = StandardFramework::new().group(&GENERAL_GROUP);
+    let framework = StandardFramework::new().group(&ALL_GROUP);
     framework.configure(Configuration::new().prefix("?"));
 
     let mut client = Client::builder(&discord_bot_token, intents)
