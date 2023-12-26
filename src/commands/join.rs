@@ -1,11 +1,11 @@
 use serenity::all::standard::macros::command;
 use serenity::model::prelude::Message;
 use serenity::{async_trait, framework::standard::CommandResult, prelude::Context};
-use songbird::{Event, EventContext, EventHandler, TrackEvent};
+use songbird::{Event, EventContext, EventHandler as VoiceEventHandler, TrackEvent};
 
 pub struct TrackErrorNotifier;
 #[async_trait]
-impl EventHandler for TrackErrorNotifier {
+impl VoiceEventHandler for TrackErrorNotifier {
     async fn act(&self, context: &EventContext<'_>) -> Option<Event> {
         if let EventContext::Track(track_list) = context {
             for (state, handle) in *track_list {
@@ -16,19 +16,18 @@ impl EventHandler for TrackErrorNotifier {
                 );
             }
         };
-
         None
     }
 }
 
 #[command]
 #[only_in(guilds)]
-async fn join(context: &Context, msg: &Message) -> CommandResult {
+async fn join(context: &Context, message: &Message) -> CommandResult {
     let (guild_id, channel_id) = {
-        let guild = msg.guild(&context.cache).unwrap();
+        let guild = message.guild(&context.cache).unwrap();
         let channel_id = guild
             .voice_states
-            .get(&msg.author.id)
+            .get(&message.author.id)
             .and_then(|voice_state| voice_state.channel_id);
         (guild.id, channel_id)
     };
@@ -36,7 +35,9 @@ async fn join(context: &Context, msg: &Message) -> CommandResult {
     let connect_to = match channel_id {
         Some(channel) => channel,
         None => {
-            let _ = msg.reply(context, "Join a voice channel before calling ?join").await;
+            let _ = message
+                .reply(context, "Join a voice channel before calling ?join")
+                .await;
             return Ok(());
         }
     };

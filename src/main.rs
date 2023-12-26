@@ -1,8 +1,8 @@
 mod commands;
 use crate::commands::join::*;
 use crate::commands::play::*;
+use crate::commands::pop::*;
 
-use dotenv;
 use reqwest::Client as HttpClient;
 use serenity::{
     async_trait,
@@ -19,7 +19,7 @@ use std::env;
 struct Handler;
 
 #[group]
-#[commands(join, play)]
+#[commands(join, play, pop)]
 struct General;
 
 #[async_trait]
@@ -27,19 +27,6 @@ impl EventHandler for Handler {
     async fn ready(&self, _: Context, ready: Ready) {
         println!("{} is connected.", ready.user.name);
     }
-
-    // async fn message(&self, context: Context, msg: Message) {
-    //     if msg.content == "~ping" {
-    //         match msg.channel_id.say(&context.http, "~pong").await {
-    //             Ok(msg) => {
-    //                 println!("Responded with {:?}", msg.content);
-    //             }
-    //             Err(why) => {
-    //                 println!("Error sending message {why:?}");
-    //             }
-    //         }
-    //     }
-    // }
 }
 
 #[tokio::main]
