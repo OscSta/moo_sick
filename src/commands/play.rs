@@ -14,8 +14,9 @@ impl TypeMapKey for HttpKey {
 }
 
 #[command]
+#[aliases("q")]
 #[only_in(guilds)]
-async fn play(context: &Context, message: &Message, mut args: Args) -> CommandResult {
+async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandResult {
     let url = match args.single::<String>() {
         Ok(url) => url,
         Err(_) => {
@@ -47,7 +48,7 @@ async fn play(context: &Context, message: &Message, mut args: Args) -> CommandRe
         let src = if do_search {
             let _ = message
                 .channel_id
-                .say(&context.http, "Please include a link starting with http")
+                .say(&context.http, r#"Please include a link in the form: "http(s)://[website].[domain]""#)
                 .await;
             return Ok(());
         } else {
@@ -59,14 +60,14 @@ async fn play(context: &Context, message: &Message, mut args: Args) -> CommandRe
             .set_volume(0.4);
 
         if let Ok(audio_meta) = Input::from(src).aux_metadata().await {
-            let audio_title = audio_meta.title.unwrap_or("audio".to_string());
+            let audio_title = audio_meta.title.unwrap_or("track".to_string());
             let _ = message
                 .channel_id
-                .say(&context.http, format!("Playing {}", audio_title))
+                .say(&context.http, format!(r#"Enqueueing: "{}""#, audio_title))
                 .await;
             println!("Enqueueing audio - {}", audio_title);
         } else {
-            println!("Playing audio - UNKNOWN TITLE");
+            println!("Enqueueing audio - Could not fetch metadata");
         }
     } else {
         let _ = message

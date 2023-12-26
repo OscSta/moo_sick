@@ -11,6 +11,7 @@ use serenity::{
         StandardFramework,
     },
     model::gateway::Ready,
+    client::EventHandler as SerenityEventHandler,
     prelude::*,
 };
 use songbird::{self, SerenityInit};
@@ -19,11 +20,11 @@ use std::env;
 struct Handler;
 
 #[group]
-#[commands(join, play, pop)]
+#[commands(join, queue, pop)]
 struct General;
 
 #[async_trait]
-impl EventHandler for Handler {
+impl SerenityEventHandler for Handler {
     async fn ready(&self, _: Context, ready: Ready) {
         println!("{} is connected.", ready.user.name);
     }

@@ -1,11 +1,11 @@
 use serenity::all::standard::macros::command;
 use serenity::model::prelude::Message;
 use serenity::{async_trait, framework::standard::CommandResult, prelude::Context};
-use songbird::{Event, EventContext, EventHandler as VoiceEventHandler, TrackEvent};
+use songbird::{Event, EventContext, EventHandler as SongbirdEventHandler, TrackEvent};
 
 pub struct TrackErrorNotifier;
 #[async_trait]
-impl VoiceEventHandler for TrackErrorNotifier {
+impl SongbirdEventHandler for TrackErrorNotifier {
     async fn act(&self, context: &EventContext<'_>) -> Option<Event> {
         if let EventContext::Track(track_list) = context {
             for (state, handle) in *track_list {
@@ -21,6 +21,7 @@ impl VoiceEventHandler for TrackErrorNotifier {
 }
 
 #[command]
+#[aliases("j")]
 #[only_in(guilds)]
 async fn join(context: &Context, message: &Message) -> CommandResult {
     let (guild_id, channel_id) = {

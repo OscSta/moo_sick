@@ -5,6 +5,7 @@ use serenity::{
 };
 
 #[command]
+#[aliases("skip", "p")]
 #[only_in(guilds)]
 async fn pop(context: &Context, message: &Message) -> CommandResult {
     let guild_id = message.guild_id.unwrap();
@@ -20,6 +21,7 @@ async fn pop(context: &Context, message: &Message) -> CommandResult {
             println!("Could not skip current track");
             return Ok(());
         }
+        let _ = queue.skip();
         let _ = message
             .channel_id
             .say(&context.http, "Skipping current track")
