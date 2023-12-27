@@ -7,9 +7,11 @@ use serenity::http::Http;
 use serenity::model::prelude::ChannelId;
 use serenity::model::prelude::Message;
 use serenity::{framework::standard::CommandResult, prelude::Context};
-use songbird::input::{Input, YoutubeDl};
+use songbird::input::Compose;
+use songbird::input::YoutubeDl;
 use songbird::tracks::PlayMode;
 use songbird::typemap::TypeMapKey;
+use songbird::TrackEvent;
 use songbird::{Event, EventContext, EventHandler as SongbirdEventHandler};
 
 use reqwest::Client as HttpClient;
@@ -22,6 +24,7 @@ impl TypeMapKey for HttpKey {
 struct SongNowPlayingNotifier {
     channel_id: ChannelId,
     http: Arc<Http>,
+    track_title: String,
 }
 #[async_trait]
 impl SongbirdEventHandler for SongNowPlayingNotifier {
@@ -29,10 +32,10 @@ impl SongbirdEventHandler for SongNowPlayingNotifier {
         if let EventContext::Track(track_list) = context {
             for (state, _handle) in *track_list {
                 if state.playing == PlayMode::Play {
-                    print!("Playing new song");
+                    println!("Playing new song");
                     let _ = self
                         .channel_id
-                        .say(&self.http, format!(r#"Now playing "{}""#, "song"))
+                        .say(&self.http, format!(r#"Now playing "{}""#, self.track_title))
                         .await;
                 }
             }
@@ -73,6 +76,7 @@ async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandR
 
     if let Some(handler_lock) = manager.get(guild_id) {
         let mut handler = handler_lock.lock().await;
+
         let src = if do_search {
             let _ = message
                 .channel_id
@@ -85,13 +89,9 @@ async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandR
         } else {
             YoutubeDl::new(http_client, url)
         };
-        let _th = handler
-            .enqueue_input(src.clone().into()) // Here .into() turns the YoutubeDl struct into an Input struct since .play_input expects an Input struct. I assume?
-            .await
-            .set_volume(0.4);
-
-        if let Ok(audio_meta) = Input::from(src).aux_metadata().await {
-            let audio_title = audio_meta.title.unwrap_or("track".to_string());
+        let audio_title;
+        if let Ok(audio_meta) = src.clone().aux_metadata().await {
+            audio_title = audio_meta.title.unwrap_or("track".to_string());
             let _ = message
                 .channel_id
                 .say(
@@ -101,8 +101,22 @@ async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandR
                 .await;
             println!("Enqueueing audio - {}", audio_title);
         } else {
+            audio_title = "Next Track".to_string();
             println!("Enqueueing audio - Could not fetch metadata");
         }
+
+        let th = handler
+            .enqueue_input(src.clone().into()) // Here .into() turns the YoutubeDl struct into an Input struct since .play_input expects an Input struct. I assume?
+            .await;
+        let _ = th.add_event(
+            TrackEvent::Play.into(),
+            SongNowPlayingNotifier {
+                channel_id: message.channel_id,
+                http: context.http.clone(),
+                track_title: audio_title,
+            },
+        );
+        let _ = th.set_volume(0.4);
     } else {
         let _ = message
             .channel_id
