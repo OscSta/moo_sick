@@ -16,6 +16,8 @@ use songbird::{Event, EventContext, EventHandler as SongbirdEventHandler};
 
 use reqwest::Client as HttpClient;
 
+use crate::commands::join;
+
 pub struct HttpKey;
 impl TypeMapKey for HttpKey {
     type Value = HttpClient;
@@ -47,8 +49,8 @@ impl SongbirdEventHandler for SongNowPlayingNotifier {
 #[command]
 #[aliases("q")]
 #[only_in(guilds)]
-async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandResult {
-    let url = match args.single::<String>() {
+async fn queue(context: &Context, message: &Message, args: Args) -> CommandResult {
+    let url = match args.clone().single::<String>() {
         Ok(url) => url,
         Err(_) => {
             let _ = message
@@ -105,10 +107,10 @@ async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandR
             println!("Enqueueing audio - Could not fetch metadata");
         }
 
-        let th = handler
+        let track_handle = handler
             .enqueue_input(src.clone().into()) // Here .into() turns the YoutubeDl struct into an Input struct since .play_input expects an Input struct. I assume?
             .await;
-        let _ = th.add_event(
+        let _ = track_handle.add_event(
             TrackEvent::Play.into(),
             SongNowPlayingNotifier {
                 channel_id: message.channel_id,
@@ -116,15 +118,17 @@ async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandR
                 track_title: audio_title,
             },
         );
-        let _ = th.set_volume(0.4);
+        let _ = track_handle.set_volume(0.4);
     } else {
         let _ = message
             .channel_id
             .say(
                 &context.http,
-                "Could not play track, make sure you and moosick are in the same voice channel",
+                "**Warning: Calling ?queue before ?join implicitly calls ?join for you, but can lead to unexpected behaviour**",
             )
             .await;
+        let _ = join::join(context, message, args.clone()).await;
+        let _ = self::queue(context, message, args).await;
     }
 
     Ok(())
