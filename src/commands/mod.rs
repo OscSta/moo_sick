@@ -1,3 +1,5 @@
 pub mod join;
-pub mod play;
+pub mod leave;
+pub mod list;
 pub mod pop;
+pub mod queue;

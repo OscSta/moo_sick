@@ -1,9 +1,11 @@
 use serenity::all::standard::macros::command;
+
 use serenity::model::prelude::Message;
 use serenity::{async_trait, framework::standard::CommandResult, prelude::Context};
+
 use songbird::{Event, EventContext, EventHandler as SongbirdEventHandler, TrackEvent};
 
-pub struct TrackErrorNotifier;
+struct TrackErrorNotifier;
 #[async_trait]
 impl SongbirdEventHandler for TrackErrorNotifier {
     async fn act(&self, context: &EventContext<'_>) -> Option<Event> {
@@ -50,7 +52,9 @@ async fn join(context: &Context, message: &Message) -> CommandResult {
 
     if let Ok(handler_lock) = manager.join(guild_id, connect_to).await {
         let mut handler = handler_lock.lock().await;
+
         handler.add_global_event(TrackEvent::Error.into(), TrackErrorNotifier);
+
         if let Ok(channel_name) = connect_to.name(&context.http).await {
             println!("Joined voice channel {:?}", channel_name);
         }

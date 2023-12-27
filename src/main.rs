@@ -1,17 +1,18 @@
 mod commands;
 use crate::commands::join::*;
-use crate::commands::play::*;
+use crate::commands::leave::*;
 use crate::commands::pop::*;
+use crate::commands::queue::*;
 
 use reqwest::Client as HttpClient;
 use serenity::{
     async_trait,
+    client::EventHandler as SerenityEventHandler,
     framework::{
         standard::{macros::group, Configuration},
         StandardFramework,
     },
     model::gateway::Ready,
-    client::EventHandler as SerenityEventHandler,
     prelude::*,
 };
 use songbird::{self, SerenityInit};
@@ -20,7 +21,7 @@ use std::env;
 struct Handler;
 
 #[group]
-#[commands(join, queue, pop)]
+#[commands(join, queue, pop, leave)]
 struct All;
 
 #[async_trait]

@@ -1,16 +1,44 @@
+use std::sync::Arc;
+
 use serenity::all::standard::macros::command;
+use serenity::async_trait;
 use serenity::framework::standard::Args;
+use serenity::http::Http;
+use serenity::model::prelude::ChannelId;
 use serenity::model::prelude::Message;
 use serenity::{framework::standard::CommandResult, prelude::Context};
 use songbird::input::{Input, YoutubeDl};
+use songbird::tracks::PlayMode;
 use songbird::typemap::TypeMapKey;
+use songbird::{Event, EventContext, EventHandler as SongbirdEventHandler};
 
 use reqwest::Client as HttpClient;
 
 pub struct HttpKey;
-
 impl TypeMapKey for HttpKey {
     type Value = HttpClient;
+}
+
+struct SongNowPlayingNotifier {
+    channel_id: ChannelId,
+    http: Arc<Http>,
+}
+#[async_trait]
+impl SongbirdEventHandler for SongNowPlayingNotifier {
+    async fn act(&self, context: &EventContext<'_>) -> Option<Event> {
+        if let EventContext::Track(track_list) = context {
+            for (state, _handle) in *track_list {
+                if state.playing == PlayMode::Play {
+                    print!("Playing new song");
+                    let _ = self
+                        .channel_id
+                        .say(&self.http, format!(r#"Now playing "{}""#, "song"))
+                        .await;
+                }
+            }
+        };
+        None
+    }
 }
 
 #[command]
@@ -48,7 +76,10 @@ async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandR
         let src = if do_search {
             let _ = message
                 .channel_id
-                .say(&context.http, r#"Please include a link in the form: "http(s)://[website].[domain]""#)
+                .say(
+                    &context.http,
+                    r#"Please include a link in the form: "http(s)://[website].[domain]""#,
+                )
                 .await;
             return Ok(());
         } else {
@@ -63,7 +94,10 @@ async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandR
             let audio_title = audio_meta.title.unwrap_or("track".to_string());
             let _ = message
                 .channel_id
-                .say(&context.http, format!(r#"Enqueueing: "{}""#, audio_title))
+                .say(
+                    &context.http,
+                    format!(r#"Added to queue: "{}""#, audio_title),
+                )
                 .await;
             println!("Enqueueing audio - {}", audio_title);
         } else {
@@ -74,7 +108,7 @@ async fn queue(context: &Context, message: &Message, mut args: Args) -> CommandR
             .channel_id
             .say(
                 &context.http,
-                "Could not play track, are you in a voice channel?",
+                "Could not play track, make sure you and moosick are in the same voice channel",
             )
             .await;
     }
