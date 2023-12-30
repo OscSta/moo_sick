@@ -4,6 +4,7 @@ use serenity::{all::Message, client::Context, framework::standard::CommandResult
 #[command]
 #[aliases("fuckoff")]
 #[only_in(guilds)]
+#[owners_only(false)]
 async fn leave(context: &Context, message: &Message) -> CommandResult {
     let guild_id = message.guild_id.unwrap();
     let manager = songbird::get(context)

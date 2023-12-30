@@ -7,6 +7,7 @@ use serenity::{
 #[command]
 #[aliases("skip", "p")]
 #[only_in(guilds)]
+#[owners_only(false)]
 async fn pop(context: &Context, message: &Message, args: Args) -> CommandResult {
     let guild_id = message.guild_id.unwrap();
     let manager = songbird::get(context)

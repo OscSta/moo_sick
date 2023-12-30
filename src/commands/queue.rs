@@ -54,6 +54,7 @@ impl SongbirdEventHandler for SongNowPlayingNotifier {
 #[command]
 #[aliases("q")]
 #[only_in(guilds)]
+#[owners_only(false)]
 async fn queue(context: &Context, message: &Message, args: Args) -> CommandResult {
     let url = match args.clone().single::<String>() {
         Ok(url) => url,
