@@ -18,6 +18,11 @@ use reqwest::Client as HttpClient;
 
 use crate::commands::join;
 
+pub struct TrackTitle;
+impl TypeMapKey for TrackTitle {
+    type Value = String;
+}
+
 pub struct HttpKey;
 impl TypeMapKey for HttpKey {
     type Value = HttpClient;
@@ -61,7 +66,7 @@ async fn queue(context: &Context, message: &Message, args: Args) -> CommandResul
         }
     };
 
-    let do_search = !url.starts_with("http");
+    let not_valid_link = !url.starts_with("http");
     let guild_id = message.guild_id.unwrap();
 
     let http_client = {
@@ -79,7 +84,7 @@ async fn queue(context: &Context, message: &Message, args: Args) -> CommandResul
     if let Some(handler_lock) = manager.get(guild_id) {
         let mut handler = handler_lock.lock().await;
 
-        let src = if do_search {
+        let src = if not_valid_link {
             let _ = message
                 .channel_id
                 .say(
@@ -116,10 +121,16 @@ async fn queue(context: &Context, message: &Message, args: Args) -> CommandResul
             SongNowPlayingNotifier {
                 channel_id: message.channel_id,
                 http: context.http.clone(),
-                track_title: audio_title,
+                track_title: audio_title.clone(),
             },
         );
+
         let _ = track_handle.set_volume(0.4);
+        let _ = track_handle
+            .typemap()
+            .write()
+            .await
+            .insert::<TrackTitle>(audio_title.clone());
     } else {
         let _ = message
             .channel_id

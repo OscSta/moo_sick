@@ -1,5 +1,5 @@
 use serenity::{
-    framework::standard::{macros::command, CommandResult},
+    framework::standard::{macros::command, Args, CommandResult},
     model::prelude::*,
     prelude::*,
 };
@@ -7,7 +7,7 @@ use serenity::{
 #[command]
 #[aliases("skip", "p")]
 #[only_in(guilds)]
-async fn pop(context: &Context, message: &Message) -> CommandResult {
+async fn pop(context: &Context, message: &Message, args: Args) -> CommandResult {
     let guild_id = message.guild_id.unwrap();
     let manager = songbird::get(context)
         .await
@@ -21,10 +21,18 @@ async fn pop(context: &Context, message: &Message) -> CommandResult {
             println!("Could not skip current track");
             return Ok(());
         }
-        let _ = queue.skip();
+
+        let skip_count = match args.clone().single::<u32>() {
+            Ok(n) => n,
+            Err(_) => {
+                let _ = queue.skip();
+                1
+            }
+        };
+
         let _ = message
             .channel_id
-            .say(&context.http, "Skipping current track")
+            .say(&context.http, format!("Skipping {} track(s)", skip_count))
             .await;
     } else {
         println!("Failed to lock Songbird manager");

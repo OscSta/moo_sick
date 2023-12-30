@@ -1,9 +1,9 @@
+use crate::TrackTitle;
 use serenity::{
     all::Message,
     framework::standard::{macros::command, CommandResult},
     prelude::*,
 };
-use songbird::tracks::PlayMode;
 
 #[command]
 #[owners_only(true)]
@@ -25,30 +25,10 @@ async fn list(context: &Context, message: &Message) -> CommandResult {
 
         let current_tracks = queue.current_queue();
         let mut current_tracks_string = String::from("Current track queue:\n");
-        for th in current_tracks.into_iter() {
-            let _typemap = th.typemap().read().await;
-            current_tracks_string.push_str(
-                format!(
-                    "- {}\n",
-                    match th
-                        .get_info()
-                        .await
-                        .expect("Could not get trackhandle info")
-                        .playing
-                    {
-                        PlayMode::Play => {
-                            "Playing"
-                        }
-                        PlayMode::End => {
-                            "Has Ended"
-                        }
-                        _ => {
-                            "Unknown"
-                        }
-                    }
-                )
-                .as_str(),
-            );
+        for (n, th) in current_tracks.into_iter().take(5).enumerate() {
+            let typemap = th.typemap().read().await;
+            let audio_title = typemap.get::<TrackTitle>().unwrap();
+            current_tracks_string.push_str(format!("{}. \"{}\"\n", n, audio_title).as_str());
         }
 
         let _ = message
