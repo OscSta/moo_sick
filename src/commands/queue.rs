@@ -140,7 +140,7 @@ async fn queue(context: &Context, message: &Message, args: Args) -> CommandResul
             .channel_id
             .say(
                 &context.http,
-                "**Warning: Calling ?queue before ?join implicitly calls ?join for you, this can lead to unexpected behaviour**",
+                "*Calling ?queue before ?join could lead to unexpected behaviour*",
             )
             .await;
         let _ = join::join(context, message, args.clone()).await;
