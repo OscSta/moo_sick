@@ -84,7 +84,7 @@ async fn queue(context: &Context, message: &Message, args: Args) -> CommandResul
                 .channel_id
                 .say(
                     &context.http,
-                    r#"Please include a link in the form: "http(s)://[website].[domain]""#,
+                    r#"Please include a link in the form: "http(s)://[website]""#,
                 )
                 .await;
             return Ok(());
@@ -110,6 +110,7 @@ async fn queue(context: &Context, message: &Message, args: Args) -> CommandResul
         let track_handle = handler
             .enqueue_input(src.clone().into()) // Here .into() turns the YoutubeDl struct into an Input struct since .play_input expects an Input struct. I assume?
             .await;
+
         let _ = track_handle.add_event(
             TrackEvent::Play.into(),
             SongNowPlayingNotifier {
@@ -124,7 +125,7 @@ async fn queue(context: &Context, message: &Message, args: Args) -> CommandResul
             .channel_id
             .say(
                 &context.http,
-                "**Warning: Calling ?queue before ?join implicitly calls ?join for you, but can lead to unexpected behaviour**",
+                "**Warning: Calling ?queue before ?join implicitly calls ?join for you, this can lead to unexpected behaviour**",
             )
             .await;
         let _ = join::join(context, message, args.clone()).await;
