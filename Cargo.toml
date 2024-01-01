@@ -15,5 +15,5 @@ default-features = true
 features = ["builtin-queue"]
 
 [dependencies.tokio]
-version = "1.34.0"
+version = "1"
 features = ["macros", "signal", "rt-multi-thread"]
