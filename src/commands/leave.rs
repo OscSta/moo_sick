@@ -16,6 +16,8 @@ async fn leave(context: &Context, message: &Message) -> CommandResult {
         let mut handler = handler_lock.lock().await;
         let _ = handler.leave().await;
         println!("Left channel");
+    } else {
+        eprintln!("Could not leave channel")
     }
 
     Ok(())

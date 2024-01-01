@@ -4,6 +4,7 @@ use crate::commands::leave::*;
 use crate::commands::list::*;
 use crate::commands::pop::*;
 use crate::commands::queue::*;
+use crate::commands::bind_playlist::*;
 
 use reqwest::Client as HttpClient;
 use serenity::http::Http;
@@ -11,7 +12,7 @@ use serenity::{
     async_trait,
     client::EventHandler as SerenityEventHandler,
     framework::{
-        standard::{macros::group, Configuration},
+        standard::{macros::*, Configuration},
         StandardFramework,
     },
     model::gateway::Ready,
@@ -22,17 +23,16 @@ use std::collections::HashSet;
 use std::env;
 
 struct Handler;
-
-#[group]
-#[commands(join, queue, pop, leave, list)]
-struct All;
-
 #[async_trait]
 impl SerenityEventHandler for Handler {
     async fn ready(&self, _: Context, ready: Ready) {
         println!("{} is connected.", ready.user.name);
     }
 }
+
+#[group]
+#[commands(join, queue, pop, leave, list, bind_playlist)]
+struct All;
 
 #[tokio::main]
 async fn main() {

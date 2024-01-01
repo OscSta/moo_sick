@@ -101,14 +101,14 @@ async fn queue(context: &Context, message: &Message, args: Args) -> CommandResul
         let audio_title;
         if let Ok(audio_meta) = src.clone().aux_metadata().await {
             audio_title = audio_meta.title.unwrap_or("track".to_string());
-            if !handler.queue().is_empty() { 
+            if !handler.queue().is_empty() {
                 let _ = message
-                .channel_id
-                .say(
-                    &context.http,
-                    format!(r#"Added to queue: "{}""#, audio_title),
-                )
-                .await;
+                    .channel_id
+                    .say(
+                        &context.http,
+                        format!(r#"Added to queue: "{}""#, audio_title),
+                    )
+                    .await;
             };
             println!("Enqueueing audio - {}", audio_title);
         } else {
