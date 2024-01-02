@@ -39,7 +39,7 @@ impl SongbirdEventHandler for SongNowPlayingNotifier {
         if let EventContext::Track(track_list) = context {
             for (state, _handle) in *track_list {
                 if state.playing == PlayMode::Play {
-                    println!("Playing new song");
+                    println!("Playing \"{}\"", self.track_title);
                     let _ = self
                         .channel_id
                         .say(&self.http, format!(r#"Now playing "{}""#, self.track_title))
@@ -55,7 +55,7 @@ impl SongbirdEventHandler for SongNowPlayingNotifier {
 #[aliases("q", "queue")]
 #[only_in(guilds)]
 #[owners_only(false)]
-async fn queue_track(context: &Context, message: &Message, args: Args) -> CommandResult {
+pub async fn queue_track(context: &Context, message: &Message, args: Args) -> CommandResult {
     let url = match args.clone().single::<String>() {
         Ok(url) => url,
         Err(_) => {
