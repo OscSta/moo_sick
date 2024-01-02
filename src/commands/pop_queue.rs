@@ -5,10 +5,10 @@ use serenity::{
 };
 
 #[command]
-#[aliases("skip", "p")]
+#[aliases("skip", "p", "pop")]
 #[only_in(guilds)]
 #[owners_only(false)]
-async fn pop(context: &Context, message: &Message, args: Args) -> CommandResult {
+async fn pop_queue(context: &Context, message: &Message, args: Args) -> CommandResult {
     let guild_id = message.guild_id.unwrap();
     let manager = songbird::get(context)
         .await

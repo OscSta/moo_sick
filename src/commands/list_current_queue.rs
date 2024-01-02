@@ -7,9 +7,9 @@ use serenity::{
 
 #[command]
 #[owners_only(true)]
-#[aliases("l")]
+#[aliases("l", "list")]
 #[owners_only(false)]
-async fn list(context: &Context, message: &Message) -> CommandResult {
+async fn list_current_queue(context: &Context, message: &Message) -> CommandResult {
     let guild_id = message.guild_id.unwrap();
     let manager = songbird::get(context)
         .await

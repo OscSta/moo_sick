@@ -1,10 +1,12 @@
 mod commands;
-use crate::commands::join::*;
-use crate::commands::leave::*;
-use crate::commands::list::*;
-use crate::commands::pop::*;
-use crate::commands::queue::*;
 use crate::commands::bind_playlist::*;
+use crate::commands::join_voice::*;
+use crate::commands::leave_voice::*;
+use crate::commands::list_current_queue::*;
+use crate::commands::pop_queue::*;
+use crate::commands::queue_track::*;
+use crate::commands::search_for_track::*;
+
 
 use reqwest::Client as HttpClient;
 use serenity::http::Http;
@@ -31,7 +33,15 @@ impl SerenityEventHandler for Handler {
 }
 
 #[group]
-#[commands(join, queue, pop, leave, list, bind_playlist)]
+#[commands(
+    join_voice,
+    queue_track,
+    pop_queue,
+    leave_voice,
+    list_current_queue,
+    bind_playlist,
+    search_for_track,
+)]
 struct All;
 
 #[tokio::main]

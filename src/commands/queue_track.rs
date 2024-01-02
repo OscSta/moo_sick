@@ -16,7 +16,7 @@ use songbird::{Event, EventContext, EventHandler as SongbirdEventHandler};
 
 use reqwest::Client as HttpClient;
 
-use crate::commands::join;
+use crate::commands::join_voice;
 
 pub struct TrackTitle;
 impl TypeMapKey for TrackTitle {
@@ -52,10 +52,10 @@ impl SongbirdEventHandler for SongNowPlayingNotifier {
 }
 
 #[command]
-#[aliases("q")]
+#[aliases("q", "queue")]
 #[only_in(guilds)]
 #[owners_only(false)]
-async fn queue(context: &Context, message: &Message, args: Args) -> CommandResult {
+async fn queue_track(context: &Context, message: &Message, args: Args) -> CommandResult {
     let url = match args.clone().single::<String>() {
         Ok(url) => url,
         Err(_) => {
@@ -143,8 +143,8 @@ async fn queue(context: &Context, message: &Message, args: Args) -> CommandResul
                 "*Calling ?queue before ?join could lead to unexpected behaviour*",
             )
             .await;
-        let _ = join::join(context, message, args.clone()).await;
-        let _ = self::queue(context, message, args).await;
+        let _ = join_voice::join_voice(context, message, args.clone()).await;
+        let _ = self::queue_track(context, message, args).await;
     }
 
     Ok(())

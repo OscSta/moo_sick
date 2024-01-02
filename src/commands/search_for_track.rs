@@ -4,10 +4,9 @@ use serenity::client::Context;
 use serenity::framework::standard::{Args, CommandResult};
 
 #[command]
-#[aliases("s")]
+#[aliases("st", "search")]
 #[only_in(guilds)]
 #[owners_only(true)]
-async fn bind_playlist(_context: &Context, _message: &Message, _args: Args) -> CommandResult {
-
+async fn search_for_track(_context: &Context, _message: &Message, _args: Args) -> CommandResult {
     Ok(())
 }

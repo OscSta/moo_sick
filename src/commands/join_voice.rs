@@ -23,10 +23,10 @@ impl SongbirdEventHandler for TrackErrorNotifier {
 }
 
 #[command]
-#[aliases("j")]
+#[aliases("j", "join")]
 #[only_in(guilds)]
 #[owners_only(false)]
-pub async fn join(context: &Context, message: &Message) -> CommandResult {
+pub async fn join_voice(context: &Context, message: &Message) -> CommandResult {
     let (guild_id, channel_id) = {
         let guild = message.guild(&context.cache).unwrap();
         let channel_id = guild
