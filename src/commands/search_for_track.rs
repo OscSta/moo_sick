@@ -9,13 +9,13 @@ use serenity::framework::standard::{Args, CommandResult};
 const MAX_RESULTS: u32 = 1;
 
 #[command]
-#[aliases("st", "search")]
+#[aliases("qs", "search")]
 #[only_in(guilds)]
 #[owners_only(true)]
 async fn search_for_track(_context: &Context, _message: &Message, args: Args) -> CommandResult {
     let search_term = args.parse::<String>();
     if search_term.is_err() {
-        // Notify user of error
+        eprintln!("Error parsing args as a search query");
         return Ok(());
     }
     let search_term = search_term.unwrap();
