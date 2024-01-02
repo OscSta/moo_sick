@@ -13,7 +13,7 @@ const MAX_RESULTS: u32 = 1;
 #[command]
 #[aliases("qs", "search")]
 #[only_in(guilds)]
-#[owners_only(true)]
+#[owners_only(false)]
 async fn search_for_track(context: &Context, message: &Message, args: Args) -> CommandResult {
     let search_term = args.message();
     if search_term.is_empty() {
