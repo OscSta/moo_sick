@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-dotenv = "0.15.0"
-reqwest = "0.11.23"
+dotenv = "0.15"
+reqwest = "0.11"
 serenity = "0.12"
-symphonia = "0.5.2"
+symphonia = "0.5"
 
 [dependencies.songbird]
 version = "0.4.0"

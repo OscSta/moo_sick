@@ -4,3 +4,4 @@ pub mod leave;
 pub mod list;
 pub mod pop;
 pub mod queue;
+pub mod search;
