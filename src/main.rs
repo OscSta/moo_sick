@@ -7,7 +7,6 @@ use crate::commands::pop_queue::*;
 use crate::commands::queue_track::*;
 use crate::commands::search_for_track::*;
 
-
 use reqwest::Client as HttpClient;
 use serenity::http::Http;
 use serenity::{
@@ -40,7 +39,7 @@ impl SerenityEventHandler for Handler {
     leave_voice,
     list_current_queue,
     bind_playlist,
-    search_for_track,
+    search_for_track
 )]
 struct All;
 

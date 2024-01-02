@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 dotenv = "0.15"
-reqwest = "0.11"
+serde_json = "1.0"
 serenity = "0.12"
 symphonia = "0.5"
 
@@ -13,6 +13,10 @@ symphonia = "0.5"
 version = "0.4.0"
 default-features = false
 features = ["builtin-queue", "driver", "serenity", "native", "gateway"]
+
+[dependencies.reqwest]
+version = "0.11"
+features = ["json"]
 
 [dependencies.tokio]
 version = "1"
