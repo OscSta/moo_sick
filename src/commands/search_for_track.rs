@@ -37,7 +37,8 @@ async fn search_for_track(context: &Context, message: &Message, args: Args) -> C
     .await
     .expect("Failed to unwrap response JSON");
 
-    let video_json = &response["items"][0];
+    let video_items = &response["items"];
+    let video_json = &video_items[0];
     let video_id = video_json["id"]["videoId"].clone().to_string().replace("\"", "");
 
     println!(
