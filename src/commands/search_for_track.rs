@@ -41,8 +41,8 @@ async fn search_for_track(context: &Context, message: &Message, args: Args) -> C
     let video_id = video_json["id"]["videoId"].clone().to_string().replace("\"", "");
 
     println!(
-        "Video ID found for query |{}| is: {}",
-        search_term, video_id
+        "Video ID found for query |{}| is: {} - passing on {}",
+        search_term, video_id, format!("https://www.youtube.com/watch?v={}", video_id).as_str()
     );
 
     // println!("Passing {} on to queue_track", format!("https://www.youtube.com/watch?v={}", video_id).as_str());
