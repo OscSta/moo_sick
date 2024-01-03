@@ -1,6 +1,5 @@
 use reqwest;
 use std::env;
-use iso8601_duration;
 
 use serenity::all::standard::macros::*;
 use serenity::all::Message;
@@ -40,7 +39,6 @@ async fn search_for_track(context: &Context, message: &Message, args: Args) -> C
 
     let video_json = &response["items"][0];
     let video_id = video_json["id"]["videoId"].clone().to_string().replace("\"", "");
-    let video_length_iso8601 = video_json["contentDetails"]["duration"].clone().to_string().replace("\"", "");
 
     println!(
         "Video ID found for query |{}| is: {}",
