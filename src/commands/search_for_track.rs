@@ -8,7 +8,11 @@ use serenity::framework::standard::{Args, CommandResult, Delimiter};
 
 use crate::commands::queue_track;
 
-const MAX_RESULTS: u32 = 1;
+const MAX_RESULTS: u32 = 5;
+
+async fn user_track_choice(choices: &Vec<(&str, &str, &str)>) -> String {
+    todo!();
+}
 
 #[command]
 #[aliases("qs", "search")]
@@ -29,32 +33,53 @@ async fn search_for_track(context: &Context, message: &Message, args: Args) -> C
             MAX_RESULTS,
             search_term,
             yt_api_key
-        )
-    )
-    .await
-    .expect("Failed to unwrap response from request")
-    .json::<serde_json::Value>()
-    .await
-    .expect("Failed to unwrap response JSON");
+        ))
+        .await
+        .expect("Failed to unwrap response from request")
+        .json::<serde_json::Value>()
+        .await
+        .expect("Failed to unwrap response JSON");
 
-    let video_items = &response["items"];
-    let video_json = &video_items[0];
-    let video_id = video_json["id"]["videoId"].clone().to_string().replace("\"", "");
+    let items = &response["items"];
+    let item0_json = &items[0];
+    let item0_id = item0_json["id"]["videoId"].as_str().unwrap();
+    let item0_link = format!("https://www.youtube.com/watch?v={}", item0_id);
+    let item_iter = items.as_array().unwrap();
+
+    let mut choices: Vec<(&str, &str, &str)> = Vec::new();
+    for item in item_iter {
+        let item_map = item.as_object().unwrap();
+        // This is kinda ugly
+        let item_id = item_map
+            .get("id")
+            .unwrap()
+            .as_object()
+            .unwrap()
+            .get("videoId")
+            .unwrap()
+            .as_str()
+            .unwrap();
+        let item_snippet = item_map.get("snippet").unwrap().as_object().unwrap();
+        let channel_name = item_snippet.get("channelTitle").unwrap().as_str().unwrap();
+        let item_title = item_snippet.get("title").unwrap().as_str().unwrap();
+        // println!("Item is {} {} {}", item_id, channel_name, item_title);
+        choices.push((item_title, channel_name, item_id));
+    }
+
+    let chosen_id = user_track_choice(&choices).await;
 
     println!(
-        "Video ID found for query |{}| is: {} - passing on {}",
-        search_term, video_id, format!("https://www.youtube.com/watch?v={}", video_id).as_str()
+        "Video ID chosen for query |{}| is: {} - passing on {} to track queue",
+        search_term, item0_id, &item0_link
     );
 
-    // println!("Passing {} on to queue_track", format!("https://www.youtube.com/watch?v={}", video_id).as_str());
     queue_track::queue_track(
         context,
         message,
-        Args::new(
-            format!("https://www.youtube.com/watch?v={}", video_id).as_str(),
-            &[Delimiter::Single(' ')]
-        ),
-    ).await.ok();
+        Args::new(&item0_link, &[Delimiter::Single(' ')]),
+    )
+    .await
+    .ok();
 
     Ok(())
 }
