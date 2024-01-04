@@ -1,4 +1,5 @@
 use reqwest;
+use serenity::builder::CreateEmbed;
 use std::env;
 
 use serenity::all::standard::macros::*;
@@ -10,16 +11,29 @@ use crate::commands::queue_track;
 
 const MAX_RESULTS: u32 = 5;
 
-async fn user_track_choice(choices: &Vec<(&str, &str, &str)>) -> String {
-    todo!();
+// Vec<title, artist, id>
+async fn user_choose_track(choices: &Vec<(&str, &str, &str)>, yt_api_key: String) -> String {
+    // let response = reqwest::get(format!(
+    //     "https://youtube.googleapis.com/youtube/v3/videos?part=fileDetails&id={}&key={}",
+    //     id, yt_api_key
+    // ))
+    // .await
+    // .unwrap()
+    // .json::<serde_json::Value>()
+    // .await
+    // .unwrap();
+    "WtOskFeLmr4".to_string()
 }
 
 #[command]
 #[aliases("qs", "search")]
 #[only_in(guilds)]
 #[owners_only(false)]
-async fn search_for_track(context: &Context, message: &Message, args: Args) -> CommandResult {
-    let search_term = args.message();
+async fn search_for_track(context: &Context, message: &Message, mut args: Args) -> CommandResult {
+    let search_term = Args::new(args.message(), &[Delimiter::Single(',')])
+        .single::<String>()
+        .unwrap();
+    let num_results = args.single::<u32>().unwrap_or(MAX_RESULTS);
     if search_term.is_empty() {
         eprintln!("Error parsing args as a search query");
         return Ok(());
@@ -30,7 +44,7 @@ async fn search_for_track(context: &Context, message: &Message, args: Args) -> C
     let response = reqwest::get(
         format!(
             "https://youtube.googleapis.com/youtube/v3/search?part=snippet&type=video&maxResults={}&q={}&key={}",
-            MAX_RESULTS,
+            num_results,
             search_term,
             yt_api_key
         ))
@@ -50,15 +64,7 @@ async fn search_for_track(context: &Context, message: &Message, args: Args) -> C
     for item in item_iter {
         let item_map = item.as_object().unwrap();
         // This is kinda ugly
-        let item_id = item_map
-            .get("id")
-            .unwrap()
-            .as_object()
-            .unwrap()
-            .get("videoId")
-            .unwrap()
-            .as_str()
-            .unwrap();
+        let item_id = item["id"]["videoId"].as_str().unwrap();
         let item_snippet = item_map.get("snippet").unwrap().as_object().unwrap();
         let channel_name = item_snippet.get("channelTitle").unwrap().as_str().unwrap();
         let item_title = item_snippet.get("title").unwrap().as_str().unwrap();
@@ -66,7 +72,7 @@ async fn search_for_track(context: &Context, message: &Message, args: Args) -> C
         choices.push((item_title, channel_name, item_id));
     }
 
-    let chosen_id = user_track_choice(&choices).await;
+    let chosen_id = user_choose_track(&choices, yt_api_key).await;
 
     println!(
         "Video ID chosen for query |{}| is: {} - passing on {} to track queue",
