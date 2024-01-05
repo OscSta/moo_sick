@@ -34,7 +34,7 @@ impl SerenityEventHandler for Handler {
 #[group]
 #[commands(
     join_voice,
-    queue_track,
+    queue_track_from_link,
     pop_queue,
     leave_voice,
     list_current_queue,

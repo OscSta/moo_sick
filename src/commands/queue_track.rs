@@ -55,7 +55,7 @@ impl SongbirdEventHandler for SongNowPlayingNotifier {
 #[aliases("q", "queue")]
 #[only_in(guilds)]
 #[owners_only(false)]
-pub async fn queue_track(context: &Context, message: &Message, args: Args) -> CommandResult {
+pub async fn queue_track_from_link(context: &Context, message: &Message, args: Args) -> CommandResult {
     let url = match args.clone().single::<String>() {
         Ok(url) => url,
         Err(_) => {
@@ -136,15 +136,8 @@ pub async fn queue_track(context: &Context, message: &Message, args: Args) -> Co
             .await
             .insert::<TrackTitle>(audio_title.clone());
     } else {
-        let _ = message
-            .channel_id
-            .say(
-                &context.http,
-                "*Calling ?queue before ?join could lead to unexpected behaviour*",
-            )
-            .await;
         let _ = join_voice::join_voice(context, message, args.clone()).await;
-        let _ = self::queue_track(context, message, args).await;
+        let _ = self::queue_track_from_link(context, message, args).await;
     }
 
     Ok(())

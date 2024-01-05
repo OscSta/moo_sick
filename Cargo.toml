@@ -5,10 +5,14 @@ edition = "2021"
 
 [dependencies]
 dotenv = "0.15"
+iso8601 = "0.6.1"
 iso8601-duration = "0.2"
 serde_json = "1.0"
-serenity = "0.12"
 symphonia = "0.5"
+
+[dependencies.serenity]
+version = "0.12"
+features = ["collector"]
 
 [dependencies.songbird]
 version = "0.4.0"
