@@ -16,7 +16,7 @@ use songbird::{Event, EventContext, EventHandler as SongbirdEventHandler};
 
 use reqwest::Client as HttpClient;
 
-use crate::commands::join_voice;
+use crate::music::commands::join_voice;
 
 pub struct TrackTitle;
 impl TypeMapKey for TrackTitle {

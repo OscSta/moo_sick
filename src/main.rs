@@ -1,11 +1,11 @@
-mod commands;
-use crate::commands::bind_playlist::*;
-use crate::commands::join_voice::*;
-use crate::commands::leave_voice::*;
-use crate::commands::list_current_queue::*;
-use crate::commands::pop_queue::*;
-use crate::commands::queue_track::*;
-use crate::commands::search_for_track::*;
+mod music;
+use crate::music::commands::bind_playlist::*;
+use crate::music::commands::join_voice::*;
+use crate::music::commands::leave_voice::*;
+use crate::music::commands::list_current_queue::*;
+use crate::music::commands::pop_queue::*;
+use crate::music::commands::queue_track::*;
+use crate::music::commands::search_for_track::*;
 
 use reqwest::Client as HttpClient;
 use serenity::http::Http;

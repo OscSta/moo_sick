@@ -8,7 +8,7 @@ use serenity::all::Message;
 use serenity::client::Context;
 use serenity::framework::standard::{Args, CommandResult, Delimiter};
 
-use crate::commands::queue_track;
+use crate::music::commands::queue_track;
 
 const MAX_RESULTS: u32 = 5;
 
