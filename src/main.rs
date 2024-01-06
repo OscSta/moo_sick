@@ -41,6 +41,10 @@ impl SerenityEventHandler for Handler {
 )]
 struct Music;
 
+#[group]
+#[prefix("aoc")]
+struct AshesOfCreation;
+
 #[tokio::main]
 async fn main() {
     let _ = dotenv::dotenv();
@@ -52,7 +56,9 @@ async fn main() {
         | GatewayIntents::GUILD_VOICE_STATES
         | GatewayIntents::non_privileged(); // Don't need all non-priveleged, but idk which ones are neccessary
 
-    let framework = StandardFramework::new().group(&MUSIC_GROUP);
+    let framework = StandardFramework::new()
+        .group(&MUSIC_GROUP)
+        .group(&ASHESOFCREATION_GROUP);
     framework.configure(
         Configuration::new()
             .owners({
