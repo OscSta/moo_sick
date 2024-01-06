@@ -2,13 +2,13 @@ use std::sync::Arc;
 
 use serenity::all::standard::macros::command;
 use serenity::async_trait;
-use serenity::framework::standard::Args;
 use serenity::http::Http;
-use serenity::model::prelude::ChannelId;
-use serenity::model::prelude::Message;
-use serenity::{framework::standard::CommandResult, prelude::Context};
-use songbird::input::Compose;
-use songbird::input::YoutubeDl;
+use serenity::model::prelude::{ChannelId, Message};
+use serenity::{
+    framework::standard::{Args, CommandResult},
+    prelude::Context,
+};
+use songbird::input::{Compose, YoutubeDl};
 use songbird::tracks::PlayMode;
 use songbird::typemap::TypeMapKey;
 use songbird::TrackEvent;
@@ -55,7 +55,11 @@ impl SongbirdEventHandler for SongNowPlayingNotifier {
 #[aliases("q", "queue")]
 #[only_in(guilds)]
 #[owners_only(false)]
-pub async fn queue_track_from_link(context: &Context, message: &Message, args: Args) -> CommandResult {
+pub async fn queue_track_from_link(
+    context: &Context,
+    message: &Message,
+    args: Args,
+) -> CommandResult {
     let url = match args.clone().single::<String>() {
         Ok(url) => url,
         Err(_) => {

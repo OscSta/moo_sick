@@ -26,3 +26,4 @@ features = ["json"]
 [dependencies.tokio]
 version = "1"
 features = ["macros", "signal", "rt-multi-thread"]
+default-features = false

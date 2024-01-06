@@ -18,7 +18,7 @@ async fn user_choose_track(
     yt_api_key: String,
     message: &Message,
     context: &Context,
-) -> String {
+) -> Option<String> {
     let joined_choices = choices
         .iter()
         .map(|choice| choice.to_string())
@@ -87,24 +87,22 @@ async fn user_choose_track(
         .await_reply(&context.shard)
         .timeout(Duration::from_secs(30));
 
-    // This paragraph is a mess
-    let mut selection;
+    // This paragraph is a bit of a mess, but it works fine
+    let selection;
     if let Some(content) = collector.await {
-        selection = content.content.parse::<usize>().unwrap_or(1);
+        selection = content.content.parse::<usize>().unwrap_or(0);
     } else {
-        let _ = message
-            .reply(&context.http, "Timed Out - Choosing option 1 by default")
-            .await;
-        selection = 1;
+        let _ = message.reply(&context.http, "Timed Out").await;
+        return None;
     }
-    if selection > choices.len() {
-        eprintln!("Invalid track index selection");
-        selection = 1;
+    if (1..choices.len()).contains(&selection) {
+        let track_id = choices[selection - 1];
+        msg.unwrap().delete(&context).await.unwrap();
+        return Some(track_id.to_string());
+    } else {
+        msg.unwrap().delete(&context).await.unwrap();
+        return None;
     }
-    let track_id = choices[selection - 1];
-
-    msg.unwrap().delete(&context).await.unwrap();
-    track_id.to_string()
 }
 
 #[command]
@@ -146,11 +144,20 @@ async fn search_for_track(context: &Context, message: &Message, args: Args) -> C
         choices.push(item_id);
     }
     let chosen_id = user_choose_track(&choices, yt_api_key, message, context).await;
-    let chosen_id_link = format!("https://www.youtube.com/watch?v={}", chosen_id);
+    let chosen_id_link = if chosen_id.is_some() {
+        format!(
+            "https://www.youtube.com/watch?v={}",
+            chosen_id.clone().unwrap()
+        )
+    } else {
+        return Ok(());
+    };
 
     println!(
         "Video ID chosen for query |{}| is: {} - passing on {} to track queue",
-        search_term, chosen_id, chosen_id_link
+        search_term,
+        chosen_id.unwrap(),
+        chosen_id_link
     );
     queue_track::queue_track_from_link(
         context,

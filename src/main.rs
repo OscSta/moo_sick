@@ -1,11 +1,8 @@
 mod music;
-use crate::music::commands::bind_playlist::*;
-use crate::music::commands::join_voice::*;
-use crate::music::commands::leave_voice::*;
-use crate::music::commands::list_current_queue::*;
-use crate::music::commands::pop_queue::*;
-use crate::music::commands::queue_track::*;
-use crate::music::commands::search_for_track::*;
+use crate::music::commands::{
+    bind_playlist::*, join_voice::*, leave_voice::*, list_current_queue::*, pop_queue::*,
+    queue_track::*, search_for_track::*,
+};
 
 use reqwest::Client as HttpClient;
 use serenity::http::Http;
@@ -19,6 +16,7 @@ use serenity::{
     model::gateway::Ready,
     prelude::*,
 };
+
 use songbird::{self, SerenityInit};
 use std::collections::HashSet;
 use std::env;
@@ -41,7 +39,7 @@ impl SerenityEventHandler for Handler {
     bind_playlist,
     search_for_track
 )]
-struct All;
+struct Music;
 
 #[tokio::main]
 async fn main() {
@@ -54,7 +52,7 @@ async fn main() {
         | GatewayIntents::GUILD_VOICE_STATES
         | GatewayIntents::non_privileged(); // Don't need all non-priveleged, but idk which ones are neccessary
 
-    let framework = StandardFramework::new().group(&ALL_GROUP);
+    let framework = StandardFramework::new().group(&MUSIC_GROUP);
     framework.configure(
         Configuration::new()
             .owners({
