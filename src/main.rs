@@ -5,7 +5,6 @@ use crate::music::commands::{
 };
 
 use reqwest::Client as HttpClient;
-use serenity::http::Http;
 use serenity::{
     async_trait,
     client::EventHandler as SerenityEventHandler,
@@ -13,13 +12,13 @@ use serenity::{
         standard::{macros::*, Configuration},
         StandardFramework,
     },
+    http::Http,
     model::gateway::Ready,
     prelude::*,
 };
 
 use songbird::{self, SerenityInit};
-use std::collections::HashSet;
-use std::env;
+use std::{collections::HashSet, env};
 
 struct Handler;
 #[async_trait]
