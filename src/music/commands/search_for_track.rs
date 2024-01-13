@@ -96,6 +96,7 @@ async fn user_choose_track(
         selection = content.content.parse::<usize>().unwrap_or(0);
     } else {
         let _ = message.reply(&context.http, "Timed Out").await;
+        let _ = msg.unwrap().delete(&context.http).await;
         return None;
     }
     if (1..choices.len()).contains(&selection) {
