@@ -19,6 +19,9 @@ async fn user_choose_track(
     message: &Message,
     context: &Context,
 ) -> Option<String> {
+    if choices.len() < 2 {
+        return Some(choices[0].to_string());
+    }
     let joined_choices = choices
         .iter()
         .map(|choice| choice.to_string())
