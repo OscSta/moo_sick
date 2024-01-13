@@ -12,13 +12,14 @@ async fn leave_voice(context: &Context, message: &Message) -> CommandResult {
         .expect("Could not get songbird client")
         .clone();
 
-    if let Some(handler_lock) = manager.get(guild_id) {
-        let mut handler = handler_lock.lock().await;
-        let _ = handler.leave().await;
-        println!("Left channel");
-    } else {
-        eprintln!("Could not leave channel")
-    }
+    match manager.remove(guild_id).await {
+        Ok(_) => {
+            println!("Left and removed");
+        }
+        Err(_) => {
+            println!("Could not leave and remove");
+        }
+    };
 
     Ok(())
 }

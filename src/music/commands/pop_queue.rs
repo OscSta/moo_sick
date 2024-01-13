@@ -20,7 +20,10 @@ async fn pop_queue(context: &Context, message: &Message, args: Args) -> CommandR
         let queue = handler.queue();
         if queue.is_empty() {
             println!("Could not skip current track, queue is empty");
-            let _ = message.channel_id.say(&context.http, "Queue is empty, cannot skip").await;
+            let _ = message
+                .channel_id
+                .say(&context.http, "Queue is empty, cannot skip")
+                .await;
             return Ok(());
         }
 
