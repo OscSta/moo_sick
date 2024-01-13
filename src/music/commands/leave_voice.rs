@@ -13,11 +13,11 @@ async fn leave_voice(context: &Context, message: &Message) -> CommandResult {
         .clone();
 
     match manager.remove(guild_id).await {
-        Ok(_) => {
+        Ok(()) => {
             println!("Left and removed");
         }
-        Err(_) => {
-            println!("Could not leave and remove");
+        Err(why) => {
+            println!("Could not leave and remove: {why}");
         }
     };
 
