@@ -53,7 +53,6 @@ impl SongbirdEventHandler for SongNowPlayingNotifier {
 
 #[command]
 #[aliases("q", "queue")]
-#[only_in(guilds)]
 #[owners_only(false)]
 pub async fn queue_track_from_link(
     context: &Context,
