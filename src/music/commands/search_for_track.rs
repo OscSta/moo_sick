@@ -116,6 +116,16 @@ async fn user_choose_track(
 async fn search_for_track(context: &Context, message: &Message, args: Args) -> CommandResult {
     let mut args = Args::new(args.message(), &[Delimiter::Single(',')]);
     let search_term = args.single::<String>().unwrap();
+    if search_term.starts_with("https") {
+        queue_track::queue_track_from_link(
+            context,
+            message,
+            Args::new(&search_term, &[Delimiter::Single(' ')]),
+        )
+        .await
+        .ok();
+        return Ok(())
+    }
     let num_results = args.single::<u32>().unwrap_or(MAX_RESULTS);
     if search_term.is_empty() {
         eprintln!("Error parsing a search query");
