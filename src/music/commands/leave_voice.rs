@@ -2,7 +2,7 @@ use serenity::all::standard::macros::command;
 use serenity::{all::Message, client::Context, framework::standard::CommandResult};
 
 #[command]
-#[aliases("fuckoff", "leave")]
+#[aliases("fuckoff", "leave", "l")]
 #[only_in(guilds)]
 #[owners_only(false)]
 async fn leave_voice(context: &Context, message: &Message) -> CommandResult {
