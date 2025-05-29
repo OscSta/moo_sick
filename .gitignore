@@ -1,3 +1,5 @@
 /target
 .env
 .vscode/
+.Cargo*
+nohup.out
